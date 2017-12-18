@@ -87,6 +87,24 @@ impl OpClass {
     pub fn from_name(name: &str) -> Option<OpClass> {
         OP_CLASS_BY_NAME.get(&name.to_ascii_lowercase() as &str).map(|v| *v)
     }
+
+    /// True if the op class branchs. Includes branch and jump instruction classes.
+    pub fn is_branch(&self) -> bool {
+        use self::OpClass::*;
+        match *self {
+            Bcc | Bcs | Beq | Bmi | Bne | Bpl | Bvc | Bvs => true,
+            _ => false,
+        }
+    }
+
+    /// True if the op class jumps. Includes jump instruction classes.
+    pub fn is_jump(&self) -> bool {
+        use self::OpClass::*;
+        match *self {
+            Jmp | Jsr => true,
+            _ => false,
+        }
+    }
 }
 
 /// Struct representing an opcode for the MOS 6502 processor
