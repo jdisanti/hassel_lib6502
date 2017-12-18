@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::ascii::AsciiExt;
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum OpParam {
@@ -82,6 +83,12 @@ pub enum OpClass {
     Adc, Dec, Dex, Dey, Inc, Inx, Iny, Sbc,
 }
 
+impl OpClass {
+    pub fn from_name(name: &str) -> Option<OpClass> {
+        OP_CLASS_BY_NAME.get(&name.to_ascii_lowercase() as &str).map(|v| *v)
+    }
+}
+
 /// Struct representing an opcode for the MOS 6502 processor
 /// Includes all information about the opcode except for its parameter
 #[derive(Debug, Eq, PartialEq)]
@@ -156,6 +163,70 @@ lazy_static! {
         for op_code in OP_CODES.iter() {
             map.insert(op_code.value, &op_code);
         }
+        map
+    };
+
+    static ref OP_CLASS_BY_NAME: HashMap<&'static str, OpClass> = {
+        use OpClass::*;
+
+        let mut map = HashMap::new();
+        map.insert("nop", Nop);
+        map.insert("brk", Brk);
+        map.insert("clc", Clc);
+        map.insert("cld", Cld);
+        map.insert("cli", Cli);
+        map.insert("clv", Clv);
+        map.insert("sec", Sec);
+        map.insert("sed", Sed);
+        map.insert("sei", Sei);
+        map.insert("lda", Lda);
+        map.insert("ldx", Ldx);
+        map.insert("ldy", Ldy);
+        map.insert("sta", Sta);
+        map.insert("stx", Stx);
+        map.insert("sty", Sty);
+        map.insert("pha", Pha);
+        map.insert("php", Php);
+        map.insert("pla", Pla);
+        map.insert("plp", Plp);
+        map.insert("tax", Tax);
+        map.insert("tay", Tay);
+        map.insert("tsx", Tsx);
+        map.insert("txa", Txa);
+        map.insert("txs", Txs);
+        map.insert("tya", Tya);
+        map.insert("bit", Bit);
+        map.insert("cmp", Cmp);
+        map.insert("cpx", Cpx);
+        map.insert("cpy", Cpy);
+        map.insert("bcc", Bcc);
+        map.insert("bcs", Bcs);
+        map.insert("beq", Beq);
+        map.insert("bmi", Bmi);
+        map.insert("bne", Bne);
+        map.insert("bpl", Bpl);
+        map.insert("bvc", Bvc);
+        map.insert("bvs", Bvs);
+        // TODO: Figure out jmp since it has two classes
+        // map.insert("jmp", JmpAbs);
+        map.insert("jsr", Jsr);
+        map.insert("rti", Rti);
+        map.insert("rts", Rts);
+        map.insert("and", And);
+        map.insert("asl", Asl);
+        map.insert("eor", Eor);
+        map.insert("lsr", Lsr);
+        map.insert("ora", Ora);
+        map.insert("rol", Rol);
+        map.insert("ror", Ror);
+        map.insert("adc", Adc);
+        map.insert("dec", Dec);
+        map.insert("dex", Dex);
+        map.insert("dey", Dey);
+        map.insert("inc", Inc);
+        map.insert("inx", Inx);
+        map.insert("iny", Iny);
+        map.insert("sbc", Sbc);
         map
     };
 
@@ -436,5 +507,8 @@ mod tests {
     fn sanity_test() {
         let nop = OpCode::from_value(0xEA).unwrap();
         assert_eq!("NOP", nop.name);
+
+        let nop = OpClass::from_name("NOP").unwrap();
+        assert_eq!(OpClass::Nop, nop);
     }
 }
