@@ -1,0 +1,7 @@
+[package]
+name = "hassel_lib6502"
+version = "0.1.0"
+authors = ["John DiSanti <johndisanti@gmail.com>"]
+
+[dependencies]
+lazy_static = "1.0"
