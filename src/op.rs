@@ -77,7 +77,7 @@ pub enum OpClass {
     Bit,
     Cmp, Cpx, Cpy,
     Bcc, Bcs, Beq, Bmi, Bne, Bpl, Bvc, Bvs,
-    JmpAbs, JmpIndirect, Jsr,
+    Jmp, Jsr,
     Rti, Rts,
     And, Asl, Eor, Lsr, Ora, Rol, Ror,
     Adc, Dec, Dex, Dey, Inc, Inx, Iny, Sbc,
@@ -216,8 +216,7 @@ lazy_static! {
         map.insert("bpl", Bpl);
         map.insert("bvc", Bvc);
         map.insert("bvs", Bvs);
-        // TODO: Figure out jmp since it has two classes
-        // map.insert("jmp", JmpAbs);
+        map.insert("jmp", Jmp);
         map.insert("jsr", Jsr);
         map.insert("rti", Rti);
         map.insert("rts", Rts);
@@ -390,8 +389,8 @@ lazy_static! {
             0x70 => ("BVS", Bvs, 2, 2, PCOffset),
 
             // Jump
-            0x4C => ("JMP", JmpAbs, 3, 3, Absolute),
-            0x6C => ("JMP", JmpIndirect, 3, 5, Indirect),
+            0x4C => ("JMP", Jmp, 3, 3, Absolute),
+            0x6C => ("JMP", Jmp, 3, 5, Indirect),
             0x20 => ("JSR", Jsr, 3, 6, Absolute),
 
             // Return
