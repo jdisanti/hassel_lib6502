@@ -118,6 +118,15 @@ impl OpCode {
     pub fn from_value(value: u8) -> Option<&'static OpCode> {
         OP_CODES_BY_VALUE.get(&value).map(|v| *v)
     }
+
+    pub fn find_by_class_and_mode(class: OpClass, mode: OpAddressMode) -> Option<&'static OpCode> {
+        for op_code in OP_CODES.iter() {
+            if op_code.class == class && op_code.address_mode == mode {
+                return Some(op_code)
+            }
+        }
+        None
+    }
 }
 
 /// Struct representing an opcode and its parameter
