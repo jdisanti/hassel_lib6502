@@ -1,6 +1,16 @@
+//
+// Copyright 2017 hassel_lib6502 Developers
+//
+// Licensed under the Apache License, Version 2.0, <LICENSE-APACHE or
+// http://apache.org/licenses/LICENSE-2.0> or the MIT license <LICENSE-MIT or
+// http://opensource.org/licenses/MIT>, at your option. This file may not be
+// copied, modified, or distributed except according to those terms.
+//
+
 use std::collections::HashMap;
 use std::ascii::AsciiExt;
 
+/// Parameter value for an op-code
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum OpParam {
     None,
@@ -9,6 +19,7 @@ pub enum OpParam {
 }
 
 impl OpParam {
+    /// Returns the byte-length of the parameter
     pub fn len(&self) -> u8 {
         match *self {
             OpParam::None => 0,
@@ -17,6 +28,7 @@ impl OpParam {
         }
     }
 
+    /// If the parameter is a word, this returns the low byte value. Otherwise, it panics.
     pub fn low_byte(&self) -> u8 {
         match *self {
             OpParam::None => panic!("can't take low_byte of none"),
@@ -25,6 +37,7 @@ impl OpParam {
         }
     }
 
+    /// If the parameter is a word, this returns the high byte value. Otherwise, it panics.
     pub fn high_byte(&self) -> u8 {
         match *self {
             OpParam::None => panic!("can't take high_byte of none"),
@@ -33,6 +46,8 @@ impl OpParam {
         }
     }
 
+    /// If this parameter is a byte, it returns its value. If it's a word, it returns the low
+    /// byte, and if it's None, then it panics.
     pub fn as_u8(&self) -> u8 {
         match *self {
             OpParam::None => panic!("can't make u8 from nothing"),
@@ -41,6 +56,7 @@ impl OpParam {
         }
     }
 
+    /// If this parameter is a byte or word, it returns its value. If it's None, then it panics.
     pub fn as_u16(&self) -> u16 {
         match *self {
             OpParam::None => panic!("can't make u16 from nothing"),
@@ -50,22 +66,50 @@ impl OpParam {
     }
 }
 
+/// Address modes and parameters used by instructions on the 6502.
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum OpAddressMode {
+    /// No parameter, and no address mode--it's implied by the op-class. For example, `CLI`.
     Implied,
+
+    /// Immediate value, no addressing
     Immediate,
+
+    /// Absolute reference to memory
     Absolute,
+
+    /// Absolute reference to memory offset by the X register
     AbsoluteOffsetX,
+
+    /// Absolute reference to memory offset by the Y register
     AbsoluteOffsetY,
+
+    /// Zero-page reference to memory
     ZeroPage,
+
+    /// Zero-page reference to memory offset by the X register
     ZeroPageOffsetX,
+
+    /// Zero-page reference to memory offset by the Y register
     ZeroPageOffsetY,
+
+    /// Offset from the current program counter--used by branch instructions
     PCOffset,
+
+    /// Absolute reference to memory--used by JMP 
     Indirect,
+
+    /// Add the parameter to X and dereference the 16-bit pointer at that location in the zero-page
     PreIndirectX,
+
+    /// Add Y to a 16-bit pointer at zero-page and dereference it
     PostIndirectY,
 }
 
+/// Instruction classes for the 6502.
+/// A class of instruction is a group of op-codes that share
+/// the same assembler acronym, but have different op-code values
+/// for different address modes and parameters.
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum OpClass {
     Nop, Top, Brk,
@@ -107,8 +151,8 @@ impl OpClass {
     }
 }
 
-/// Struct representing an opcode for the MOS 6502 processor
-/// Includes all information about the opcode except for its parameter
+/// Opcode for the MOS 6502 processor.
+/// Includes all information about the opcode except for its parameter.
 #[derive(Debug, Eq, PartialEq)]
 pub struct OpCode {
     /// The byte-value for this particular op-code
@@ -137,6 +181,10 @@ impl OpCode {
         OP_CODES_BY_VALUE.get(&value).map(|v| *v)
     }
 
+    /// Look up an op-code by the class and address mode. Useful when writing
+    /// an assembler where you know the instruction class (i.e., STA or LDA),
+    /// but don't know the exact op-code for the requested address mode.
+    /// Returns None if no such op-code exists.
     pub fn find_by_class_and_mode(class: OpClass, mode: OpAddressMode) -> Option<&'static OpCode> {
         for op_code in OP_CODES.iter() {
             if op_code.class == class && op_code.address_mode == mode {
@@ -147,7 +195,7 @@ impl OpCode {
     }
 }
 
-/// Struct representing an opcode and its parameter
+/// An opcode and its parameter
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct Op {
     pub code: &'static OpCode,
