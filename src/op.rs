@@ -96,7 +96,7 @@ pub enum OpAddressMode {
     /// Offset from the current program counter--used by branch instructions
     PCOffset,
 
-    /// Absolute reference to memory--used by JMP 
+    /// Absolute reference to memory--used by JMP
     Indirect,
 
     /// Add the parameter to X and dereference the 16-bit pointer at that location in the zero-page
@@ -112,24 +112,70 @@ pub enum OpAddressMode {
 /// for different address modes and parameters.
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum OpClass {
-    Nop, Top, Brk,
-    Clc, Cld, Cli, Clv, Sec, Sed, Sei,
-    Lda, Ldx, Ldy,
-    Sta, Stx, Sty,
-    Pha, Php, Pla, Plp,
-    Tax, Tay, Tsx, Txa, Txs, Tya,
+    Nop,
+    Top,
+    Brk,
+    Clc,
+    Cld,
+    Cli,
+    Clv,
+    Sec,
+    Sed,
+    Sei,
+    Lda,
+    Ldx,
+    Ldy,
+    Sta,
+    Stx,
+    Sty,
+    Pha,
+    Php,
+    Pla,
+    Plp,
+    Tax,
+    Tay,
+    Tsx,
+    Txa,
+    Txs,
+    Tya,
     Bit,
-    Cmp, Cpx, Cpy,
-    Bcc, Bcs, Beq, Bmi, Bne, Bpl, Bvc, Bvs,
-    Jmp, Jsr,
-    Rti, Rts,
-    And, Asl, Eor, Lsr, Ora, Rol, Ror,
-    Adc, Dec, Dex, Dey, Inc, Inx, Iny, Sbc,
+    Cmp,
+    Cpx,
+    Cpy,
+    Bcc,
+    Bcs,
+    Beq,
+    Bmi,
+    Bne,
+    Bpl,
+    Bvc,
+    Bvs,
+    Jmp,
+    Jsr,
+    Rti,
+    Rts,
+    And,
+    Asl,
+    Eor,
+    Lsr,
+    Ora,
+    Rol,
+    Ror,
+    Adc,
+    Dec,
+    Dex,
+    Dey,
+    Inc,
+    Inx,
+    Iny,
+    Sbc,
 }
 
 impl OpClass {
     pub fn from_name(name: &str) -> Option<OpClass> {
-        OP_CLASS_BY_NAME.get(&name.to_ascii_lowercase() as &str).map(|v| *v)
+        OP_CLASS_BY_NAME
+            .get(&name.to_ascii_lowercase() as &str)
+            .map(|v| *v)
     }
 
     /// True if the op class branchs. Includes branch and jump instruction classes.
@@ -188,7 +234,7 @@ impl OpCode {
     pub fn find_by_class_and_mode(class: OpClass, mode: OpAddressMode) -> Option<&'static OpCode> {
         for op_code in OP_CODES.iter() {
             if op_code.class == class && op_code.address_mode == mode {
-                return Some(op_code)
+                return Some(op_code);
             }
         }
         None
@@ -205,7 +251,11 @@ pub struct Op {
 impl Op {
     pub fn new(code: &'static OpCode, param: OpParam) -> Op {
         if code.len != param.len() + 1 {
-            panic!("Can't construct Op: OpCode requires a parameter of length {}, but given length {}", code.len - 1, param.len());
+            panic!(
+                "Can't construct Op: OpCode requires a parameter of length {}, but given length {}",
+                code.len - 1,
+                param.len()
+            );
         } else {
             Op {
                 code: code,

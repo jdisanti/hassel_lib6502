@@ -10,17 +10,17 @@
 //! The hassel_lib6502 crate provides all of the information you could need about both the
 //! documented and undocumented instructions for the MOS 6502 processor for the purposes of
 //! writing emulators, assemblers, disassemblers, or compilers.
-//! 
+//!
 //! ## Examples
-//! 
+//!
 //! Decoding an op from binary:
-//! 
+//!
 //! ```rust
 //! # extern crate hassel_lib6502;
 //! # use hassel_lib6502::{Op, OpCode, OpParam};
 //! # fn main() {
 //! let bytes = vec![0x20, 0x41, 0xE0];
-//! 
+//!
 //! let op_code = OpCode::from_value(bytes[0]).unwrap();
 //! let op_param = match op_code.len {
 //!     1 => OpParam::None,
@@ -32,9 +32,9 @@
 //! println!("{:#?}", op);
 //! # }
 //! ```
-//! 
+//!
 //! Creating an op based on class and address mode:
-//! 
+//!
 //! ```rust
 //! # extern crate hassel_lib6502;
 //! # use hassel_lib6502::{Op, OpAddressMode OpClass, OpCode, OpParam};
@@ -42,12 +42,12 @@
 //! let op_class = OpClass::Lda;
 //! let address_mode = OpAddressMode::ZeroPage;
 //! let op_code = OpCode::find_by_class_and_mode(op_class, address_mode).unwrap();
-//! 
+//!
 //! // This resultant op will be equivalent to LDA $00
 //! let op = Op::new(op_code, OpParam::Byte(0x00));
 //! # }
 //! ```
-//! 
+//!
 
 #[macro_use]
 extern crate lazy_static;
