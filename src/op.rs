@@ -178,7 +178,7 @@ pub struct OpCode {
 impl OpCode {
     /// Returns an opcode based off its byte value
     pub fn from_value(value: u8) -> Option<&'static OpCode> {
-        OP_CODES_BY_VALUE.get(&value).map(|v| *v)
+        OP_CODES_BY_VALUE[value as usize]
     }
 
     /// Look up an op-code by the class and address mode. Useful when writing
@@ -233,10 +233,10 @@ macro_rules! configure_opcodes {
 }
 
 lazy_static! {
-    static ref OP_CODES_BY_VALUE: HashMap<u8, &'static OpCode> = {
-        let mut map: HashMap<u8, &'static OpCode> = HashMap::new();
+    static ref OP_CODES_BY_VALUE: Vec<Option<&'static OpCode>> = {
+        let mut map: Vec<Option<&'static OpCode>> = vec![None; 256];
         for op_code in OP_CODES.iter() {
-            map.insert(op_code.value, &op_code);
+            map[op_code.value as usize] = Some(&op_code);
         }
         map
     };
